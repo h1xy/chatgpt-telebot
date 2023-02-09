@@ -8,23 +8,44 @@ const { token, apiKey, group_name } = process.env
 const prefix = group_name ? '/' + group_name : '/gpt'
 const bot = new TelegramBot(token, { polling: true });
 console.log(new Date().toLocaleString(), '--Bot has been started...');
-const completionParams = {
-  model: 'text-davinci-003',
-  temperature: 0.7,
-  presence_penalty: 0.6
-}
+//const completionParams = {
+  //model: 'text-davinci-003',
+  //temperature: 0.7,
+  //presence_penalty: 0.6
+//}
 
 const api = new ChatGPTAPI({
   apiKey,
-  debug: true,
-  completionParams,
-  maxModelTokens: 4096,
-  maxResponseTokens: 1e3
+  debug: false,
+  //completionParams,
+  //maxModelTokens: 4096,
+  //maxResponseTokens: 1e3
 })
+
+let lastMessageTime;
+let timeDifference;
 
 bot.on('text', async (msg) => {
   console.log(new Date().toLocaleString(), '--Received message from id:', msg.chat.id, ':', msg.text);
-  await msgHandler(msg);
+  
+    if (msg.text.indexOf('/vip') === 0) {
+    msgHandler(msg);
+    return;
+    }
+
+   let currentMessageTime = new Date();
+
+  if (lastMessageTime) {
+    timeDifference = currentMessageTime - lastMessageTime;
+  }
+  
+  let countdownsecond = Math.round((30000 - timeDifference)/1000)
+
+  if (timeDifference <= 30000) {  // 1 minute in milliseconds
+    bot.sendMessage(msg.chat.id, '速率控制，请'+ countdownsecond + '秒后重试', {reply_to_message_id: msg.message_id});
+    }
+  
+    else await msgHandler(msg);
 });
 
 async function msgHandler(msg) {
@@ -32,10 +53,14 @@ async function msgHandler(msg) {
     return;
   }
   switch (true) {
+//    case msg.chat.type === 'private':
+//      bot.sendMessage(msg.chat.id, 'Private chat will return later. Until then, //Please check https://t.me/gpt345');
+//      break;
     case msg.text.startsWith('/start'):
       await bot.sendMessage(msg.chat.id, '👋你好！很高兴能与您交谈。有什么我可以帮您的吗？');
       break;
     case msg.text.length >= 2:
+      lastMessageTime = new Date();
       await chatGpt(msg);
       break;
     default:
@@ -50,8 +75,7 @@ async function chatGpt(msg) {
       reply_to_message_id: msg.message_id
     })).message_id;
     bot.sendChatAction(msg.chat.id, 'typing');
-    const response = await api.sendMessage(msg.text.replace(prefix, ''),{
-  promptPrefix: `You are ChatGPT, a large language model trained by OpenAI. 
+    const response = await api.sendMessage(msg.text.replace(prefix, ''),{promptPrefix: `You are ChatGPT, a large language model trained by OpenAI. 
 Current date: ${new Date().toISOString()}\n\n`
 })
     console.log(new Date().toLocaleString(), '--AI response to <', msg.text, '>:', response.text);
