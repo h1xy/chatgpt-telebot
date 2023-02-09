@@ -19,8 +19,8 @@ const api = new ChatGPTAPI({
   apiKey,
   debug: true,
   completionParams,
-  maxModelTokens = 4096,
-  maxResponseTokens = 1e3
+  maxModelTokens： 4096,
+  maxResponseTokens： 1e3
 })
 
 bot.on('text', async (msg) => {
@@ -51,7 +51,7 @@ async function chatGpt(msg) {
       reply_to_message_id: msg.message_id
     })).message_id;
     bot.sendChatAction(msg.chat.id, 'typing');
-    const response = await api.sendMessage(msg.text.replace(prefix, '')，{
+    const response = await api.sendMessage(msg.text.replace(prefix, ''){
   promptPrefix: `You are ChatGPT, a large language model trained by OpenAI. 
 Current date: ${new Date().toISOString()}\n\n`
 })
