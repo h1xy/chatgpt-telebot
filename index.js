@@ -11,8 +11,7 @@ console.log(new Date().toLocaleString(), '--Bot has been started...');
 const completionParams = {
   model: 'text-davinci-003',
   temperature: 0.7,
-  presence_penalty: 0.6,
-  max_tokens: 4096
+  presence_penalty: 0.6
 }
 
 const api = new ChatGPTAPI({
