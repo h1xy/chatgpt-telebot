@@ -28,7 +28,8 @@ let timeDifference;
 bot.on('text', async (msg) => {
   console.log(new Date().toLocaleString(), '--Received message from id:', msg.chat.id, ':', msg.text);
   
-    if (msg.text.indexOf('/vip') === 0) {
+// 特定前缀或特定用户发的消息不做速率限制
+  if (msg.text.indexOf('/vip') === 0 || msg.from.id === 1051339668) {
     msgHandler(msg);
     return;
     }
