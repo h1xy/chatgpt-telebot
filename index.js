@@ -8,15 +8,18 @@ const { token, apiKey, group_name } = process.env
 const prefix = group_name ? '/' + group_name : '/gpt'
 const bot = new TelegramBot(token, { polling: true });
 console.log(new Date().toLocaleString(), '--Bot has been started...');
+
+//completion参数可调
 //const completionParams = {
   //model: 'text-davinci-003',
   //temperature: 0.7,
   //presence_penalty: 0.6
 //}
-
+const currentDate = new Date().toISOString().split('T')[0]
 const api = new ChatGPTAPI({
   apiKey,
   debug: false,
+  systemMessage: `You are ChatGPT, a large language model trained by OpenAI. knowledge cutoff: 2021-09. \nCurrent date: ${currentDate}\n`,
   //completionParams,
   //maxModelTokens: 4096,
   //maxResponseTokens: 1e3
@@ -76,9 +79,7 @@ async function chatGpt(msg) {
       reply_to_message_id: msg.message_id
     })).message_id;
     bot.sendChatAction(msg.chat.id, 'typing');
-    const response = await api.sendMessage(msg.text.replace(prefix, ''),{promptPrefix: `You are ChatGPT, a large language model trained by OpenAI. 
-Current date: ${new Date().toISOString()}\n\n`
-})
+    const response = await api.sendMessage(msg.text.replace(prefix, ''))
     console.log(new Date().toLocaleString(), '--AI response to <', msg.text, '>:', response.text);
     await bot.editMessageText(response.text, { parse_mode: 'Markdown', chat_id: msg.chat.id, message_id: tempId });
   } catch (err) {
