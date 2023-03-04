@@ -19,7 +19,7 @@ const currentDate = new Date().toISOString().split('T')[0]
 const api = new ChatGPTAPI({
   apiKey,
   debug: false,
-  systemMessage: `You are ChatGPT, a large language model trained by OpenAI. knowledge cutoff: 2021-09. \nCurrent date: ${currentDate}\n`,
+  systemMessage: `You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2021-09-01\nCurrent date: ${currentDate}`,
   //completionParams,
   //maxModelTokens: 4096,
   //maxResponseTokens: 1e3
